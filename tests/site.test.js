@@ -19,3 +19,15 @@ test('browser and guide links work under a GitHub Pages project subdirectory', (
     }
   }
 });
+test('both pages credit TJ Engineering with a bundled logo and safe external link', () => {
+  const logo = readFileSync(new URL('../site/assets/tje-black.png', import.meta.url));
+  assert.equal(logo.subarray(0, 8).toString('hex'), '89504e470d0a1a0a');
+  for (const page of ['index.html', 'info.html']) {
+    const html = readFileSync(new URL(`../site/${page}`, import.meta.url), 'utf8');
+    const footer = html.match(/<footer>[\s\S]*?<\/footer>/)?.[0];
+    assert.ok(footer, `${page}: missing footer`);
+    assert.match(footer, /href="https:\/\/github\.com\/TJ-engineering" target="_blank" rel="noopener noreferrer"/);
+    assert.match(footer, /src="assets\/tje-black\.png" width="40" height="40" alt=""/);
+    assert.match(footer, /a TJ Engineering project/);
+  }
+});
