@@ -1,6 +1,6 @@
 import catalogue from './data/catalogue.js';
 import {expandDocument} from './data-codec.js';
-import {buildModel, findMatches, findRepeated, reference, structureRuns, shebanqUrl} from './core.js';
+import {buildModel, findMatches, findRepeated, reference, structureRuns, shebanqUrl, parseSearchValue} from './core.js';
 const $ = id => document.getElementById(id);
 const PAGE_SIZE = 12, RESULT_PAGE = 25;
 const notes = {
@@ -154,7 +154,7 @@ $('show-glosses').addEventListener('change',()=>{if(state.model){renderReader();
 for (const kind of ['phrases','clauses']) $(`show-${kind}`).addEventListener('change',()=>{if(state.model){renderReader();renderResults();}});
 $('repeated').addEventListener('click',()=>{state.mode='repeat';state.selected=null;renderSelection();search();});
 $('clear').addEventListener('click',()=>{state.mode=null;state.selected=null;state.value=null;$('value').value='';renderSelection();search();});
-$('value-form').addEventListener('submit',e=>{e.preventDefault();const v=Number($('value').value);if($('value').value===''||!Number.isSafeInteger(v)||v<0)return;state.mode='match';state.value=v;state.selected=null;renderSelection();search();});
+$('value-form').addEventListener('submit',e=>{e.preventDefault();const v=parseSearchValue($('value').value);if(v===null)return;state.mode='match';state.value=v;state.selected=null;renderSelection();search();});
 function turnPage(page){state.page=page;renderReader();$('reader').scrollIntoView({behavior:'smooth',block:'start'});}
 $('previous').addEventListener('click',()=>turnPage(Math.max(0,state.page-1)));
 $('next').addEventListener('click',()=>turnPage(Math.min(Math.ceil(state.data.verses.length/PAGE_SIZE)-1,state.page+1)));

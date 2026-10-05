@@ -1,4 +1,10 @@
 // Pure search functions shared by the browser and Node's built-in test runner.
+export function parseSearchValue(input) {
+  if (typeof input !== 'string' || !/^[0-9]+$/.test(input.trim())) return null;
+  const value = Number(input.trim());
+  return Number.isSafeInteger(value) ? value : null;
+}
+
 export function buildModel(data, {method = 'hechrechi', representation = 'full', reading = 'ketiv'} = {}) {
   const index = data.methods.indexOf(method);
   if (index < 0 || !['full','word','lexeme'].includes(representation) || !['ketiv','qere'].includes(reading)) throw Error('Unsupported selection');

@@ -33,7 +33,7 @@ Open [create_parasha_json.ipynb](create_parasha_json.ipynb). Its linked contents
 ```console
 python -m venv .venv
 .venv\Scripts\Activate.ps1
-python -m pip install -r requirements-dev.txt
+python -m pip install --require-hashes --only-binary=:all: -r requirements-dev.txt
 python export_parashot.py
 ```
 
@@ -81,18 +81,33 @@ Python checks all exported documents, source integrity, coverage, boundaries and
 
 ## Code quality
 
-[`.github/workflows/quality.yml`](.github/workflows/quality.yml) runs on pushes and pull requests to `main`, and can also be run manually. It checks JavaScript with ESLint, checks Python and the notebook with Ruff, runs the browser tests, and runs the Python tests on Python 3.11 and 3.13. The checks validate the committed compact datasets without regenerating them or accessing private source repositories. The workflow has read-only repository permissions and no deployment access.
+[`.github/workflows/quality.yml`](.github/workflows/quality.yml) runs on pushes and pull requests to `main`, and can also be run manually. It checks JavaScript with ESLint, checks Python and the notebook with Ruff, runs the browser tests, and runs the Python tests on Linux Python 3.11/3.13 and Windows Python 3.13. Python dependencies are installed from the hashed lock with `--require-hashes --only-binary=:all:`. The checks validate the committed compact datasets without regenerating them or accessing private source repositories. The workflow has read-only repository permissions and no deployment access.
 
 To run the lint checks locally, use Node.js 24 or later and install the Python development requirements:
 
 ```console
 npm ci --ignore-scripts
 npm run lint
-python -m pip install -r requirements-dev.txt
+python -m pip install --require-hashes --only-binary=:all: -r requirements-dev.txt
 python -m ruff check .
 ```
 
 Lint rules focus on errors, unused code, and likely bugs; they do not impose a repository-wide formatting change. The workflow reports checks but does not itself enable branch protection or make them required for merging.
+
+## Security and dependency maintenance
+
+See [SECURITY.md](SECURITY.md) for supported versions, confidential reporting, and security boundaries. Both HTML pages use a same-origin CSP. Rendering uses text nodes rather than HTML injection, numerical searches accept only decimal nonnegative safe integers, and external SHEBANQ links use `noopener noreferrer`. ESLint rejects common HTML injection and dynamic code-execution APIs. These controls are defense in depth, not a guarantee against all vulnerabilities; meta CSP does not support `frame-ancestors`.
+
+[`.github/dependabot.yml`](.github/dependabot.yml) checks the SHA-pinned GitHub Actions weekly and opens reviewable update PRs. It does not enable automatic merging.
+
+`requirements.in` and `requirements-dev.in` are the dependency inputs. Their corresponding `.txt` files are generated, fully pinned, hashed locks with environment markers for cross-platform installation. Runtime pins also constrain the development lock. To regenerate them, install `uv==0.12.23` in a separate tooling environment and run:
+
+```console
+uv pip compile --universal --python-version 3.11 --generate-hashes --no-build requirements.in -o requirements.txt
+uv pip compile --universal --python-version 3.11 --generate-hashes --no-build -c requirements.txt requirements-dev.in -o requirements-dev.txt
+```
+
+`uv` is needed only to maintain the locks, not to use the browser or install its Python tools. Unlike an environment-specific pip-tools compilation, universal resolution includes platform-dependent packages such as Linux `pexpect` and Windows `colorama`. Use `--upgrade-package NAME` for an intentional transitive update, then review both locks and run the checks. Dependency hashes verify downloaded distributions; they do not attest that a dependency is safe. Wheel-only installs avoid executing source-build hooks.
 
 ## GitHub Pages
 
