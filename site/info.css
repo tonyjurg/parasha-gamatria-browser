@@ -1,0 +1,36 @@
+.guide-page { background: #fff; }
+.guide-page .masthead { max-width: 1120px; flex-wrap: wrap; }
+.open-browser { font-size: 14px; font-weight: 600; text-underline-offset: 4px; }
+.guide-main { max-width: 1120px; }
+.guide-intro { border-top: 1px solid var(--line); padding: 28px 0; }
+.guide-intro h2 { font-size: 26px; }
+.guide-intro p { color: var(--muted); max-width: 680px; margin: 0; }
+.guide-layout { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 40px; align-items: start; }
+.guide-contents { position: sticky; top: 24px; display: grid; gap: 12px; font-size: 14px; padding-bottom: 24px; }
+.guide-contents a { text-decoration: none; }
+.guide-contents a:hover { text-decoration: underline; }
+.guide-content { min-width: 0; max-width: 740px; }
+.guide-content section { border-top: 1px solid var(--line); padding: 25px 0; scroll-margin-top: 20px; }
+.guide-content h2 { font-size: 22px; }
+.guide-content h3 { margin-top: 24px; }
+.guide-content li { padding-left: 4px; margin: 0 0 12px; }
+.guide-content ol { padding-left: 24px; }
+.guide-content dt { font-weight: 650; margin-top: 18px; }
+.guide-content dd { margin: 4px 0 14px; }
+.guide-content p, .guide-content li, .guide-content dd { overflow-wrap: anywhere; }
+.hebrew-example { display: inline-block; font: 24px/1.5 "Times New Roman", serif; vertical-align: baseline; }
+.method-table { overflow-x: auto; }
+.method-table table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.method-table caption { text-align: left; color: var(--muted); margin-bottom: 12px; }
+.method-table th, .method-table td { padding: 13px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+.method-table thead { background: var(--wash); }
+.method-table tbody th { width: 36%; font-weight: 600; }
+.guide-return { border-top: 1px solid var(--line); padding: 24px 0; }
+.guide-page .eyebrow { letter-spacing: 0; }
+@media (max-width: 760px) {
+  .guide-layout { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .guide-contents { position: static; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 18px; }
+  .guide-intro { padding: 22px 0; }
+  .guide-page .masthead { gap: 16px; }
+  .method-table th, .method-table td { padding: 12px 8px; overflow-wrap: anywhere; }
+}

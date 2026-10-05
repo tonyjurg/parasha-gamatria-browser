@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Browser Guide | Parasha Gamatria Browser</title>
+  <meta name="description" content="A guide to reading Torah portions, comparing gematria values, and exploring Hebrew phrases and clauses.">
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="info.css">
+</head>
+<body class="guide-page">
+  <a class="skip" href="#guide">Skip to the guide</a>
+  <header class="masthead">
+    <div class="brand"><img src="assets/logo.svg" width="52" height="52" alt=""><div><p class="eyebrow">TEXT &middot; NUMBER &middot; CONNECTION</p><h1>Parasha Gamatria Browser</h1></div></div>
+    <a class="open-browser" href="index.html">Open browser</a>
+  </header>
+  <main id="guide" class="guide-main">
+    <div class="guide-intro"><h2>How to use the browser</h2><p>Read a Torah portion, select a Hebrew word, and explore passages whose words share its numerical value.</p></div>
+    <div class="guide-layout">
+      <nav class="guide-contents" aria-label="Guide contents">
+        <a href="#start">Get started</a><a href="#settings">Choose the calculation</a><a href="#display">Read the text</a><a href="#search">Find connections</a><a href="#methods">Five methods</a><a href="#sources">Sources and interpretation</a>
+      </nav>
+      <article class="guide-content">
+        <section id="start">
+          <h2>Get started</h2>
+          <ol>
+            <li>Choose a <strong>Torah portion</strong>. The browser opens with Bereshit, the first of the 54 individual portions.</li>
+            <li>Keep <strong>Standard &middot; Hechrechi</strong>, <strong>Whole word</strong>, and <strong>As written &middot; ketiv</strong> for a first exploration.</li>
+            <li>Turn on <strong>Show word values</strong> to see the numbers. Enable <strong>Show glosses</strong> for English lexical meanings.</li>
+            <li>Click a Hebrew word. Its value appears under <strong>Explore connections</strong>, with matching passages from the selected portion.</li>
+          </ol>
+          <p>For example, in Genesis 1:1, <span class="hebrew-example" lang="he" dir="rtl">בְּרֵאשִׁית</span> has the standard whole-word value <strong>913</strong>. <a href="index.html#parasha=1&amp;method=hechrechi&amp;representation=full&amp;reading=ketiv">Open Bereshit with these settings</a>, then select the first word.</p>
+        </section>
+        <section id="settings">
+          <h2>Choose the calculation</h2>
+          <p><strong>Gematria method</strong> changes how consonants receive values. <strong>Calculate from</strong> determines which spelling or word unit is counted:</p>
+          <dl>
+            <dt>Whole word</dt><dd>Combines attached BHSA parts and counts the resulting word once. For example, <span lang="he" dir="rtl">ב + ראשית</span> is treated as one whole word.</dd>
+            <dt>Word part</dt><dd>Counts each BHSA word unit separately. An attached prefix can therefore have its own value.</dd>
+            <dt>Dictionary form</dt><dd>Calculates from the normalized dictionary spelling of each BHSA word unit, while displaying the word as it occurs in the text.</dd>
+          </dl>
+          <p><strong>Text reading</strong> selects the written form (<strong>ketiv</strong>) or the recorded reading (<strong>qere</strong>). Qere uses ketiv where no alternative is recorded. A recorded empty reading remains empty. Dictionary-form values stay the same when changing the reading, although the displayed text may change.</p>
+          <p>Vowels and cantillation are displayed, but only the normalized consonants contribute to gematria.</p>
+        </section>
+        <section id="display">
+          <h2>Read the text</h2>
+          <dl>
+            <dt>Show word values</dt><dd>Displays the current numerical value below each word, in both the reader and search results.</dd>
+            <dt>Show glosses</dt><dd>Displays BHSA English dictionary glosses. Attached parts in whole-word mode join their glosses with a plus sign. These are lexical meanings, not a contextual translation of the verse.</dd>
+            <dt>Box phrases / Box clauses</dt><dd>Shows optional outlines for the BHSA linguistic structures. Phrase outlines are teal; clause outlines are rose. Enable either or both. Boxes include glosses and numbers when shown; a structure interrupted by other words is displayed in separate runs.</dd>
+            <dt>Go to verse / Previous / Next</dt><dd>Jumps to a verse or browses pages of 12 verses. A structure that continues beyond a displayed verse or passage is shown only for its visible words.</dd>
+            <dt>SHEBANQ</dt><dd>Opens the verse in SHEBANQ, using BHSA 2021, in a new tab for further textual study.</dd>
+          </dl>
+          <p>Matching words are highlighted in gold. Selecting a word shows its value under <strong>Explore connections</strong>. A small teal dot marks words with a recorded qere when the qere reading is selected.</p>
+        </section>
+        <section id="search">
+          <h2>Find connections</h2>
+          <h3>Match a word or a number</h3>
+          <p>Click a word, or enter a non-negative whole number under <strong>Or look for a value</strong> and choose <strong>Find</strong>. For example, try <strong>26</strong> with the standard method. All searches stay within the selected Torah portion.</p>
+          <p><strong>Show matching</strong> chooses verses, sentences, clauses, or phrases as the result size. Each result contains at least one word with the requested value. This matches individual word values, not the summed value of the passage.</p>
+          <h3>Find shared values within a passage</h3>
+          <p>Choose <strong>Find shared values</strong> to find passages containing two or more word occurrences with the same value. A repeated occurrence of the same spelling counts. Enable <strong>Require different spellings</strong> to require at least two different normalized consonantal forms; in dictionary mode, this compares dictionary forms.</p>
+          <p>Whole words count once, even when they consist of multiple BHSA parts. A whole word must fit completely inside a selected sentence, clause, or phrase to count there. Switch to <strong>Word part</strong> to examine a structure containing only part of an attached form. Empty readings and unavailable values are excluded from matches.</p>
+          <h3>Browse and reset results</h3>
+          <p><strong>Show in text</strong> jumps to the first verse of a result. <strong>Show more results</strong> reveals further matches. <strong>Clear</strong> removes the selection and results. Changing the method, representation, reading, or result size recalculates the current search; choosing another portion starts a new search.</p>
+          <p>The browser URL records the portion, method, representation, and reading. A copied link opens those settings; it does not preserve search results, a selected word, or the display checkboxes.</p>
+        </section>
+        <section id="methods">
+          <h2>Five gematria methods</h2>
+          <div class="method-table"><table><caption>Letter values and reductions</caption><thead><tr><th scope="col">Method</th><th scope="col">Calculation</th></tr></thead><tbody>
+            <tr><th scope="row">Standard &middot; Hechrechi</th><td>Traditional values from 1 to 400. Final letter forms keep the ordinary letter value.</td></tr>
+            <tr><th scope="row">Final letters &middot; Gadol</th><td>Uses extended values of 500, 600, 700, 800, and 900 for <span lang="he" dir="rtl">ך, ם, ן, ף, ץ</span>, respectively.</td></tr>
+            <tr><th scope="row">Alphabet order &middot; Sidduri</th><td>Uses alphabet positions from 1 to 22. Final forms share their ordinary letter's position.</td></tr>
+            <tr><th scope="row">Reduced letters &middot; Katan</th><td>Reduces each letter's standard value to a single digit, then adds those digits.</td></tr>
+            <tr><th scope="row">Single digit &middot; Katan Mispari</th><td>Repeatedly reduces the standard total to a single digit.</td></tr>
+          </tbody></table></div>
+        </section>
+        <section id="sources">
+          <h2>Sources and interpretation</h2>
+          <p>Hebrew text, lexical glosses, and linguistic structures come from <a href="https://etcbc.github.io/bhsa/">ETCBC BHSA 2021</a>. Numerical features come from <a href="https://github.com/tonyjurg/gematria_TF">gematria_TF</a>; portion boundaries and names come from <a href="https://github.com/tonyjurg/BHSaddons">BHSaddons</a>. The portions are individual readings, not calendar-based combinations.</p>
+          <p>Verse references follow BHSA's Hebrew Bible divisions. Sentences, clauses, and phrases follow linguistic annotations. If a structural unit crosses a portion boundary, only the words in this portion are searched, and the result is marked.</p>
+          <p>Equal numbers are a textual observation and do not by themselves establish a historical intention or interpretation.</p>
+          <p>Text and derived data are licensed under <a href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a>; browser code is MIT, and this guide is CC BY 4.0. By Tony Jurg. <a href="https://github.com/tonyjurg/parasha-gamatria-browser">View the project on GitHub</a>.</p>
+        </section>
+        <p class="guide-return"><a class="open-browser" href="index.html">Open the Gematria Browser</a></p>
+      </article>
+    </div>
+  </main>
+  <footer>54 Torah portions &middot; Five numerical methods &middot; Powered by Text-Fabric data</footer>
+</body>
+</html>

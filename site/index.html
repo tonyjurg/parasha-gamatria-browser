@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Parasha Gamatria Browser</title>
+  <meta name="description" content="Explore Hebrew gematria in all 54 Torah portions, with Text-Fabric data.">
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml"><link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="gloss.css">
+</head>
+<body>
+<a class="skip" href="#reader">Skip to the text</a>
+<header class="masthead"><div class="brand"><img src="assets/logo.svg" width="52" height="52" alt=""><div><p class="eyebrow">TEXT · NUMBER · CONNECTION</p><h1>Parasha Gamatria Browser</h1></div></div><a class="help-link" href="info.html">Browser guide</a></header>
+<main>
+  <section class="controls" aria-label="Choose your text and calculation">
+    <label class="portion-choice">Torah portion<select id="parasha"></select></label>
+    <label>Gematria method<select id="method"></select></label>
+    <label>Calculate from<select id="representation"><option value="full">Whole word</option><option value="word">Word part</option><option value="lexeme">Dictionary form</option></select></label>
+    <label>Text reading<select id="reading"><option value="ketiv">As written · ketiv</option><option value="qere">As read · qere</option></select></label>
+  </section>
+  <p id="method-note" class="method-note"></p>
+  <div id="status" class="status" role="status" aria-live="polite">Loading the Torah portions…</div>
+  <div id="error" class="error" role="alert" hidden><p id="error-message"></p><button id="retry">Try again</button></div>
+  <div class="workspace" id="workspace" hidden>
+    <section class="reading-panel" id="reader" aria-labelledby="portion-title">
+      <div class="panel-header"><div><p class="eyebrow" id="portion-range"></p><h2 id="portion-title"></h2><p id="portion-stats" class="muted"></p></div><span lang="he" dir="rtl" id="portion-hebrew"></span></div>
+      <div class="reader-toolbar"><label class="check"><input id="show-values" type="checkbox"> Show word values</label><label class="check"><input id="show-glosses" type="checkbox"> Show glosses</label><label>Go to verse<select id="verse-jump"></select></label></div>
+      <div class="reader-toolbar structure-controls"><label class="check"><input id="show-phrases" type="checkbox"> Box phrases</label><label class="check"><input id="show-clauses" type="checkbox"> Box clauses</label></div>
+      <p class="hint">Select a word to find other words with the same value in this portion.</p>
+      <div id="verses"></div>
+      <nav class="pagination" aria-label="Browse the parasha"><button id="previous">← Previous</button><span id="page-label"></span><button id="next">Next →</button></nav>
+    </section>
+    <aside class="search-panel" aria-labelledby="search-title">
+      <h2 id="search-title">Explore connections</h2>
+      <div id="selection" class="selection"><p>Select any word in the text.</p><span class="selection-hint">Its value and matching passages will appear here.</span></div>
+      <label class="unit-choice">Show matching<select id="unit"><option value="verse">Verses</option><option value="sentence">Sentences</option><option value="clause">Clauses</option><option value="phrase">Phrases</option></select></label>
+      <form id="value-form" class="value-search"><label for="value">Or look for a value</label><div><input id="value" type="number" min="0" step="1" placeholder="e.g. 26" inputmode="numeric"><button>Find</button></div></form>
+      <div class="repeat-box"><h3>Shared values in one passage</h3><p>Find passages containing two or more words with the same gematria.</p><label class="check"><input id="different" type="checkbox"> Require different spellings</label><button id="repeated" class="primary">Find shared values</button></div>
+      <div class="results-heading"><h3 id="results-title">Matching passages</h3><button id="clear" class="quiet">Clear</button></div>
+      <p id="result-summary" class="muted" aria-live="polite">Choose a word or run a search.</p>
+      <div id="results"></div><button id="more" hidden>Show more results</button>
+    </aside>
+  </div>
+  <details id="about" class="about"><summary>About the text, methods and searches</summary>
+    <div class="about-grid"><section><h2>A guide to exploring</h2><p>Choose one of the 54 individual Torah portions and a numerical method. Click a Hebrew word or enter a number to find matching passages <strong>within that portion</strong>. Gold highlighting identifies the matching words.</p><p><strong>Whole word</strong> joins attached parts such as ב + ראשית. <strong>Word part</strong> treats the separate BHSA units independently. <strong>Dictionary form</strong> uses the dictionary spelling while showing the text as it occurs.</p><p>“Find shared values” finds at least two word occurrences with the same value in a single verse, sentence, clause or phrase. Repeated occurrences of the same word count; choose “Require different spellings” to require at least two different consonantal forms. In dictionary mode, it compares dictionary forms.</p></section>
+    <section><h2>Reading the results</h2><p><strong>Ketiv</strong> follows the written consonants. <strong>Qere</strong> uses an explicitly recorded reading, falling back to ketiv where none exists. Vowels and cantillation appear in the text but do not contribute to gematria. Empty readings do not count as words; unavailable values are not matches.</p><p>Sentences, clauses and phrases come from BHSA linguistic annotations, not punctuation guesses. Units crossing a parasha boundary are restricted to the selected portion and marked. Whole words must be fully inside the selected unit to count; switch to word parts to inspect a unit that splits an attached form.</p><p>Verse numbering follows BHSA’s Hebrew Bible divisions. Portions are individual readings, not calendar-based combined readings. Equal numbers are a textual observation, not evidence of historical intention.</p></section></div>
+    <p class="sources">Sources: <a href="https://etcbc.github.io/bhsa/">ETCBC BHSA 2021</a> · <a href="https://github.com/tonyjurg/gematria_TF">gematria_TF</a> · <a href="https://github.com/tonyjurg/BHSaddons">BHSaddons</a>. Text and derived data: <a href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a>. Browser code: MIT. By Tony Jurg. Source revisions and file checksums are recorded in <a href="data/catalogue.js">the data catalogue</a>.</p>
+  </details>
+</main>
+<footer>54 Torah portions · Five numerical methods · Powered by Text-Fabric data</footer>
+<noscript>This browser needs JavaScript. The 54 JSON data files can also be used independently.</noscript>
+<script type="module" src="app.js"></script>
+</body></html>
