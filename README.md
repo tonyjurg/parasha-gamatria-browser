@@ -79,9 +79,13 @@ node --test tests/*.test.js
 
 Python checks all exported documents, source integrity, coverage, boundaries and output hashes. JavaScript tests the exact search logic used by the browser: known Genesis 1:1 totals, all five methods, word-part versus whole-word grouping, all four structural levels, repeated spellings, split phrases and missing readings.
 
-## Static hosting later
+## GitHub Pages
 
-Upload the contents of `site/` to any static web server. All links and data requests are relative, including under a GitHub project subdirectory. No build step or backend is required. When you decide to publish to GitHub Pages, deploy **only `site/`**, not the source checkouts. A Pages website may be public even when its source repository is private. This repository contains the complete project; website deployment is not configured.
+The browser is published at [tonyjurg.github.io/parasha-gamatria-browser](https://tonyjurg.github.io/parasha-gamatria-browser/), with the [browser guide](https://tonyjurg.github.io/parasha-gamatria-browser/info.html) on the same site.
+
+[`.github/workflows/pages.yml`](.github/workflows/pages.yml) uses GitHub Actions to run the JavaScript tests, upload **only `site/`**, and deploy it to GitHub Pages. It runs automatically on pushes to `main`, or manually from **Actions > Deploy GitHub Pages > Run workflow**. In **Settings > Pages > Build and deployment**, the publishing source must be **GitHub Actions**. Official actions are pinned to commit hashes; deployment permissions are limited to the deployment job.
+
+Deployment uses the existing 54 compact JSON files. It does not regenerate data, access the private source repositories, or require custom credentials. All links and data requests are relative, including under the GitHub project subdirectory. No build step or backend is required. The contents of `site/` can also be hosted on another static web server.
 
 ## Attribution and licenses
 
