@@ -1,5 +1,4 @@
 import json
-from pathlib import Path
 import pytest
 from export_parashot import ROOT, digest, validate_document, validate_sources
 from data_codec import expand_document

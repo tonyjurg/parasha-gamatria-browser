@@ -5,3 +5,5 @@ __pycache__/
 .tf/
 output/
 *.log
+node_modules/
+.ruff_cache/

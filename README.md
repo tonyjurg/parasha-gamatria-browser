@@ -79,6 +79,21 @@ node --test tests/*.test.js
 
 Python checks all exported documents, source integrity, coverage, boundaries and output hashes. JavaScript tests the exact search logic used by the browser: known Genesis 1:1 totals, all five methods, word-part versus whole-word grouping, all four structural levels, repeated spellings, split phrases and missing readings.
 
+## Code quality
+
+[`.github/workflows/quality.yml`](.github/workflows/quality.yml) runs on pushes and pull requests to `main`, and can also be run manually. It checks JavaScript with ESLint, checks Python and the notebook with Ruff, runs the browser tests, and runs the Python tests on Python 3.11 and 3.13. The checks validate the committed compact datasets without regenerating them or accessing private source repositories. The workflow has read-only repository permissions and no deployment access.
+
+To run the lint checks locally, use Node.js 24 or later and install the Python development requirements:
+
+```console
+npm ci --ignore-scripts
+npm run lint
+python -m pip install -r requirements-dev.txt
+python -m ruff check .
+```
+
+Lint rules focus on errors, unused code, and likely bugs; they do not impose a repository-wide formatting change. The workflow reports checks but does not itself enable branch protection or make them required for merging.
+
 ## GitHub Pages
 
 The browser is published at [tonyjurg.github.io/parasha-gamatria-browser](https://tonyjurg.github.io/parasha-gamatria-browser/), with the [browser guide](https://tonyjurg.github.io/parasha-gamatria-browser/info.html) on the same site.

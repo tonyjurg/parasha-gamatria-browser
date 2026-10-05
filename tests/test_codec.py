@@ -1,3 +1,6 @@
+import json
+from pathlib import Path
+import pytest
 from data_codec import compact_document, expand_document
 
 
@@ -17,3 +20,15 @@ def test_null_empty_qere_discontinuous_membership_and_clipping_survive():
     assert decoded == doc
     assert decoded['words'][0]['values']['lexeme'] is not decoded['words'][0]['values']['word_ketiv']
     assert compact_document(packed) == packed
+
+
+@pytest.mark.parametrize('row', ['forms', 'values', 'verses'])
+def test_truncated_compact_rows_are_rejected(row):
+    path = Path(__file__).resolve().parents[1] / 'site/data/01.json'
+    packed = json.loads(path.read_text(encoding='utf-8'))
+    if row == 'values':
+        packed['words'][0][8].pop()
+    else:
+        packed[row][0].pop()
+    with pytest.raises(ValueError, match='zip'):
+        expand_document(packed)

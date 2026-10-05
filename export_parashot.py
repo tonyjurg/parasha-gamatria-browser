@@ -199,7 +199,7 @@ def export_all(api, lock, output=None):
     if {p.name for p in output.glob('*.json')} != expected:
         raise ValueError('Data directory contains unexpected JSON files; use a clean directory')
     manifest = {'schemaVersion': 2, 'title': 'Parasha Gamatria Browser',
-                'methods': [{'id':m,'label':label} for m,label in zip(METHODS,METHOD_LABELS)],
+                'methods': [{'id':m,'label':label} for m,label in zip(METHODS,METHOD_LABELS,strict=True)],
                 'sources': lock, 'parashot': summary, 'sourceVerseCounterAudit':counter_audit, 'license': 'CC BY-NC 4.0'}
     (output/'catalogue.js').write_text('export default '+json.dumps(manifest,ensure_ascii=False,indent=2)+';\n',encoding='utf-8',newline='\n')
     print(f'Export complete: 54 JSON files, {sum(x["words"] for x in summary):,} Torah word units',flush=True)

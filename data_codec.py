@@ -44,13 +44,13 @@ def expand_document(doc):
         raise ValueError('Unsupported dataset schema')
     strings = doc['strings']
     forms = [dict(zip(('text', 'after', 'plain', 'start', 'end'),
-                     [strings[i] for i in row[:3]] + row[3:])) for row in doc['forms']]
+                     [strings[i] for i in row[:3]] + row[3:], strict=True)) for row in doc['forms']]
     return {'schemaVersion': 1, **{k: doc[k] for k in ('id', 'name', 'hebrew', 'methods', 'range')},
             'words': [{'id': w[0], 'verse': w[1], 'lexeme': strings[w[2]], 'gloss': strings[w[3]],
                        'hasQere': bool(w[4]), 'error': strings[w[5]],
                        'forms': {'ketiv': dict(forms[w[6]]), 'qere': dict(forms[w[7]])},
-                       'values': {rep: list(doc['values'][i]) for rep, i in zip(REPRESENTATIONS, w[8])}}
+                       'values': {rep: list(doc['values'][i]) for rep, i in zip(REPRESENTATIONS, w[8], strict=True)}}
                       for w in doc['words']],
-            'verses': [dict(zip(('id', 'ref', 'words', 'sourceParashaVerse'), v)) for v in doc['verses']],
+            'verses': [dict(zip(('id', 'ref', 'words', 'sourceParashaVerse'), v, strict=True)) for v in doc['verses']],
             'units': {kind: [{'id': u[0], 'words': u[1], 'clipped': bool(u[2])} for u in units]
                       for kind, units in doc['units'].items()}}
