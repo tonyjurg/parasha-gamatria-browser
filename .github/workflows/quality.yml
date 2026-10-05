@@ -65,5 +65,5 @@ jobs:
         run: python -m pip check
       - name: Lint Python and notebook
         run: python -m ruff check . --output-format=github
-      - name: Test exporter and data integrity
+      - name: Test committed data and optimization-safe validation
         run: python -m pytest -q

@@ -70,6 +70,8 @@ Whole-form boundaries come from gematria_TF, which stops at nonempty trailers (i
 
 [docs/data-format.md](docs/data-format.md) describes the JSON schema. `site/data/01.json` through `54.json` are the only parasha JSON files. The ES-module `catalogue.js` lists names, ranges, counts and per-file checksums, plus source revisions and licenses. This is deliberately a JavaScript index so that the static dataset consists of exactly 54 JSON files.
 
+Schema 1 is the readable in-memory model, not the current storage format. The exporter builds schema 1, compacts it to schema 2 for storage, and checks that expansion restores the original schema-1 document. Expanding an already-readable document returns it unchanged.
+
 ## Validation
 
 ```console
@@ -77,7 +79,9 @@ python -m pytest -q
 node --test tests/*.test.js
 ```
 
-Python checks all exported documents, source integrity, coverage, boundaries and output hashes. JavaScript tests the exact search logic used by the browser: known Genesis 1:1 totals, all five methods, word-part versus whole-word grouping, all four structural levels, repeated spellings, split phrases and missing readings.
+The entire Python suite is source-independent: it uses the committed JSON files, synthetic TF APIs and mocked downloads, with no private repositories or network access required. It verifies the exact set of 54 schema-2 files against the catalogue's SHA-256 values, complete coverage, boundaries, expansion idempotence and lossless round trips. Malformed-record and compaction-guard tests also run in `python -O` subprocesses to ensure optimization cannot disable validation. Rejected compaction leaves the input files unchanged. Only real data regeneration requires the source repositories.
+
+JavaScript tests the exact search logic used by the browser: known Genesis 1:1 totals, all five methods, word-part versus whole-word grouping, all four structural levels, repeated spellings, split phrases and missing readings.
 
 ## Code quality
 

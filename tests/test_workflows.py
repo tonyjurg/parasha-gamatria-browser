@@ -24,3 +24,16 @@ def test_dependabot_checks_actions_weekly():
     actions = next(update for update in document['updates'] if update['package-ecosystem'] == 'github-actions')
     assert actions['directory'] == '/'
     assert actions['schedule']['interval'] == 'weekly'
+
+
+def test_quality_workflow_runs_the_full_source_independent_python_suite():
+    document = yaml.safe_load((ROOT / '.github/workflows/quality.yml').read_text(encoding='utf-8'))
+    job = document['jobs']['python']
+    assert job['strategy']['matrix']['include'] == [
+        {'os': 'ubuntu-latest', 'python-version': '3.11'},
+        {'os': 'ubuntu-latest', 'python-version': '3.13'},
+        {'os': 'windows-latest', 'python-version': '3.13'},
+    ]
+    commands = [step['run'] for step in job['steps'] if 'run' in step]
+    assert 'python -m pytest -q' in commands
+    assert 'python -m pip install --require-hashes --only-binary=:all: -r requirements-dev.txt' in commands

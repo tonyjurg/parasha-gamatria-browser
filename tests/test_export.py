@@ -19,10 +19,16 @@ def test_all_54_documents_have_complete_consistent_structure():
 def test_catalogue_checksums_and_counts():
     source=(ROOT/'site/data/catalogue.js').read_text(encoding='utf-8')
     catalogue=json.loads(source.removeprefix('export default ').strip().removesuffix(';'))
+    assert catalogue['schemaVersion'] == 2
+    expected_files = {f'{i:02d}.json' for i in range(1, 55)}
+    assert len(catalogue['parashot']) == 54
+    assert {entry['file'] for entry in catalogue['parashot']} == expected_files
+    assert {path.name for path in (ROOT / 'site/data').glob('*.json')} == expected_files
     for entry in catalogue['parashot']:
         path=ROOT/'site/data'/entry['file']
         assert digest(path)==entry['sha256']
         doc=json.loads(path.read_text(encoding='utf-8'))
+        assert doc['schemaVersion'] == 2
         assert len(doc['words'])==entry['words']
         assert len(doc['verses'])==entry['verses']
     assert catalogue['sources']['gematria']['version']=='0.2.0'
@@ -38,18 +44,18 @@ def test_source_changes_are_rejected(tmp_path):
 def test_duplicate_word_ids_are_rejected():
     doc=documents()[0]
     doc['words'].append(doc['words'][0])
-    with pytest.raises(AssertionError,match='Duplicate'):
+    with pytest.raises(ValueError,match='Duplicate'):
         validate_document(doc)
 
 def test_invalid_full_form_boundaries_are_rejected():
     doc=documents()[0]
     doc['words'][0]['forms']['ketiv']['end']=99999999
-    with pytest.raises(AssertionError,match='boundary'):
+    with pytest.raises(ValueError,match='boundary'):
         validate_document(doc)
 
 def test_glosses_are_exported_and_invalid_types_are_rejected():
     doc = documents()[0]
     assert [w['gloss'] for w in doc['words'][:2]] == ['in', 'beginning']
     doc['words'][0]['gloss'] = 42
-    with pytest.raises(AssertionError, match='gloss'):
+    with pytest.raises(ValueError, match='gloss'):
         validate_document(doc)

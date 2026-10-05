@@ -30,10 +30,17 @@ print(document['words'][0]['gloss'])
 ```
 
 The browser uses `expandDocument` from `site/data-codec.js`. Both helpers accept
-schema 1 and schema 2, returning the readable schema-1 model below. Decoded forms
-and value arrays are independent objects, even when stored once.
+schema 1 and schema 2, returning the readable schema-1 model below. Expansion is
+idempotent: an already-readable schema-1 document is returned unchanged (the
+same object), not decoded again. Decoded forms and value arrays are independent
+objects, even when stored once.
 
-## Decoded Model (Legacy Schema 1)
+The lifecycle is **readable schema 1 -> compact schema 2 -> readable schema 1**.
+The exporter builds schema 1 internally; all 54 committed JSON files and the
+catalogue use schema 2. These version numbers describe different representations,
+not conflicting dataset revisions. Tests verify this contract for every file.
+
+## Readable Model (Schema 1)
 
 Every file describes one BHSaddons portion. Node IDs remain BHSA 2021 IDs; they are not array offsets.
 
@@ -66,3 +73,10 @@ validating all files before replacing them and updating catalogue sizes/hashes.
 `docs/compaction-report.json` records before/after sizes and readable-export
 hashes. JavaScript tests compare all 54 expanded files against these hashes,
 including every string, value and structural membership.
+
+`validate_document` accepts either representation and validates the readable
+model. Invalid word ordering, verse membership, glosses, numerical arrays,
+full-form bounds or unit membership raise `ValueError` with parasha and, where
+applicable, word/reading/unit context. Validation and compaction guards remain
+active under `python -O`; they do not rely on Python assertions. Regression
+tests exercise these rejection paths without loading source TF data.

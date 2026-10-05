@@ -1,5 +1,24 @@
 # Local validation
 
+## Source-Independent Checks
+
+Run `python -m pytest -q` and `node --test tests/*.test.js` from the repository.
+These suites use committed exports, synthetic TF APIs and mocked downloads;
+they do not require private repositories, network access or data regeneration.
+The code-quality workflow runs the full Python suite on Linux Python 3.11/3.13
+and Windows Python 3.13, alongside JavaScript tests and both linters.
+
+Checks include all 54 schema-2 files and catalogue SHA-256 values, complete Torah
+coverage, readable schema-1 expansion identity/idempotence, lossless compaction,
+and malformed-record rejection in optimized Python subprocesses. Checksum and
+round-trip failures are tested under normal Python and `python -O`, including
+failure on a later file before any previously prepared file is replaced.
+Synthetic exports cover absent, explicitly empty and nonempty qere readings.
+Notebook validation is unconditional even when Python optimization is enabled.
+
+The dated sections below record earlier regeneration and browser checks. Their
+test counts and file sizes are historical, not current suite totals.
+
 ## Direct ETCBC Source: 4 October 2026
 
 The notebook completed every code cell using newly downloaded BHSA TF files
@@ -79,4 +98,5 @@ Tested through the local HTTP preview, with no browser console warnings or error
 - Navigated directly to Genesis 8:17 and inspected the changed qere text.
 - Checked the stacked layout at a 390-pixel viewport width, with no horizontal page overflow.
 
-The repository and preview are local only. No remote or deployment is configured.
+At this initial validation on 3 October, the repository and preview were local
+only. GitHub publication and Pages deployment were configured subsequently.

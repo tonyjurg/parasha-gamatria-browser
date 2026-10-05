@@ -99,34 +99,61 @@ def partition_verses(api):
             if number not in groups:
                 raise ValueError(f'Unexpected parasha number {number}')
             groups[number].append(verse)
-    coverage = Counter(w for verses in groups.values() for v in verses for w in api.L.d(v, otype='word'))
-    if any(not verses for verses in groups.values()) or set(coverage) != torah_words or any(n != 1 for n in coverage.values()):
+    coverage = Counter(
+        word
+        for verses in groups.values()
+        for verse in verses
+        for word in api.L.d(verse, otype='word')
+    )
+    covered_words = set(coverage)
+    empty_portions = [number for number, verses in groups.items() if not verses]
+    missing_words = torah_words - covered_words
+    outside_words = covered_words - torah_words
+    overlapping_words = [word for word, count in coverage.items() if count != 1]
+    if empty_portions or missing_words or outside_words or overlapping_words:
         raise ValueError(f'BHSaddons must divide the Torah into exactly 54 non-overlapping, complete portions '
-                         f'(empty portions: {sum(not vs for vs in groups.values())}, '
+                         f'(empty portions: {len(empty_portions)}, '
                          f'Torah words: {len(torah_words)}, covered: {len(coverage)}, '
-                         f'missing: {len(torah_words - set(coverage))}, '
-                         f'outside Torah: {len(set(coverage) - torah_words)})')
+                         f'missing: {len(missing_words)}, '
+                         f'outside Torah: {len(outside_words)}, '
+                         f'overlapping words: {len(overlapping_words)})')
     return groups
 
 
 def validate_document(doc):
+    """Validate readable or compact records, including under Python optimization."""
     doc = expand_document(doc)
+    context = f"Parasha {doc['id']}"
     ids = [w['id'] for w in doc['words']]
     available = set(ids)
-    assert ids == sorted(available), 'Duplicate or unordered word IDs'
+    if ids != sorted(available):
+        raise ValueError(f'{context}: Duplicate or unordered word IDs')
     verse_words = [w for v in doc['verses'] for w in v['words']]
-    assert verse_words == ids, 'Verse membership does not cover the parasha exactly'
+    if verse_words != ids:
+        raise ValueError(f'{context}: Verse membership does not cover the parasha exactly')
     for word in doc['words']:
-        assert 'gloss' in word and (word['gloss'] is None or isinstance(word['gloss'], str)), 'Invalid gloss'
-        assert set(word['values']) == set(REPRESENTATIONS)
-        for values in word['values'].values():
-            assert len(values) == 5 and all(v is None or type(v) is int and v >= 0 for v in values)
-        for form in word['forms'].values():
-            assert form['start'] in available and form['end'] in available, 'Full form crosses parasha boundary'
-            assert form['start'] <= word['id'] <= form['end']
-    for units in doc['units'].values():
-        assert len({u['id'] for u in units}) == len(units)
-        assert all(u['words'] and set(u['words']) <= available for u in units)
+        word_context = f"{context}, word {word['id']}"
+        if 'gloss' not in word or not (word['gloss'] is None or isinstance(word['gloss'], str)):
+            raise ValueError(f'{word_context}: Invalid gloss')
+        if set(word['values']) != set(REPRESENTATIONS):
+            raise ValueError(f'{word_context}: Invalid value representations')
+        for representation, values in word['values'].items():
+            valid_numbers = all(value is None or type(value) is int and value >= 0 for value in values)
+            if len(values) != len(METHODS) or not valid_numbers:
+                raise ValueError(f'{word_context}, {representation}: Invalid numerical values')
+        for reading, form in word['forms'].items():
+            form_context = f'{word_context}, {reading}'
+            if form['start'] not in available or form['end'] not in available:
+                raise ValueError(f'{form_context}: Full form crosses parasha boundary')
+            if not form['start'] <= word['id'] <= form['end']:
+                raise ValueError(f'{form_context}: Invalid full form bounds')
+    for kind, units in doc['units'].items():
+        duplicates = [node for node, count in Counter(unit['id'] for unit in units).items() if count > 1]
+        if duplicates:
+            raise ValueError(f'{context}, {kind} {duplicates[0]}: Duplicate unit IDs')
+        for unit in units:
+            if not unit['words'] or not set(unit['words']) <= available:
+                raise ValueError(f"{context}, {kind} {unit['id']}: Empty or invalid unit membership")
     return True
 
 
@@ -152,24 +179,52 @@ def export_all(api, lock, output=None):
         if missing or mismatched:
             counter_audit.append({'parasha':number,'missing':missing,'differentFromTextOrder':mismatched})
         verse_lookup = {w: v for v in verses for w in api.L.d(v, otype='word')}
-        doc = {'schemaVersion': 1, 'id': number, 'name': next(iter(names)), 'hebrew': next(iter(hebrew_names)),
-               'methods': METHODS, 'range': [list(api.T.sectionFromNode(v)) for v in (verses[0],verses[-1])],
-               'words': [], 'verses': [], 'units': {}}
+        # Build the readable schema-1 model; compaction below writes schema 2.
+        doc = {
+            'schemaVersion': 1,
+            'id': number,
+            'name': next(iter(names)),
+            'hebrew': next(iter(hebrew_names)),
+            'methods': METHODS,
+            'range': [list(api.T.sectionFromNode(v)) for v in (verses[0], verses[-1])],
+            'words': [],
+            'verses': [],
+            'units': {},
+        }
         for v in verses:
-            doc['verses'].append({'id': v, 'ref': list(api.T.sectionFromNode(v)), 'words': list(api.L.d(v, otype='word')), 'sourceParashaVerse':api.F.parashaverse.v(v)})
+            doc['verses'].append({
+                'id': v,
+                'ref': list(api.T.sectionFromNode(v)),
+                'words': list(api.L.d(v, otype='word')),
+                'sourceParashaVerse': api.F.parashaverse.v(v),
+            })
         for w in words:
-            item = {'id': w, 'verse': verse_lookup[w], 'lexeme': api.F.gem_text_lexeme.v(w),
-                    'gloss': api.F.gloss.v(w),
-                    'hasQere': bool(api.F.gem_has_qere.v(w)), 'error': api.F.gem_qere_error.v(w), 'forms': {}, 'values': {}}
+            item = {
+                'id': w,
+                'verse': verse_lookup[w],
+                'lexeme': api.F.gem_text_lexeme.v(w),
+                'gloss': api.F.gloss.v(w),
+                'hasQere': bool(api.F.gem_has_qere.v(w)),
+                'error': api.F.gem_qere_error.v(w),
+                'forms': {},
+                'values': {},
+            }
             qere = api.F.qere_utf8.v(w)
             for reading in READINGS:
                 use_qere = reading == 'qere' and qere is not None
+                if use_qere:
+                    display_text = qere
+                    trailer = api.F.qere_trailer_utf8.v(w)
+                else:
+                    display_text = api.F.g_word_utf8.v(w)
+                    trailer = api.F.trailer_utf8.v(w)
                 item['forms'][reading] = {
-                    'text': qere if use_qere else api.F.g_word_utf8.v(w),
-                    'after': (api.F.qere_trailer_utf8.v(w) or '') if use_qere else (api.F.trailer_utf8.v(w) or ''),
+                    'text': display_text,
+                    'after': trailer or '',
                     'plain': api.Fs(f'gem_text_word_{reading}').v(w),
                     'start': api.Fs(f'gem_full_start_{reading}').v(w),
-                    'end': api.Fs(f'gem_full_end_{reading}').v(w)}
+                    'end': api.Fs(f'gem_full_end_{reading}').v(w),
+                }
             for rep in REPRESENTATIONS:
                 item['values'][rep] = [features[f'gem_{m}_{rep}_ident'].v(w) for m in METHODS]
             doc['words'].append(item)

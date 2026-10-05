@@ -38,6 +38,7 @@ def compact_document(doc):
 
 
 def expand_document(doc):
+    """Return readable schema 1; already-readable input is returned unchanged."""
     if doc['schemaVersion'] == 1:
         return doc
     if doc['schemaVersion'] != 2:

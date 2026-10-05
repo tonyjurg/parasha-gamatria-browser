@@ -12,11 +12,13 @@ def compact_dataset():
     prepared, report = [], []
     for entry in catalogue['parashot']:
         path = directory/entry['file']
-        assert digest(path) == entry['sha256'], f'Checksum mismatch: {path}'
+        if digest(path) != entry['sha256']:
+            raise ValueError(f'Checksum mismatch: {path}')
         original = expand_document(json.loads(path.read_text(encoding='utf-8')))
         validate_document(original)
         compact = compact_document(original)
-        assert expand_document(compact) == original, f'Lossy compaction: {path}'
+        if expand_document(compact) != original:
+            raise ValueError(f'Lossy compaction: {path}')
         readable = (json.dumps(original, ensure_ascii=False, separators=(',', ':'))+'\n').encode('utf-8')
         text = json.dumps(compact, ensure_ascii=False, separators=(',', ':'))+'\n'
         report.append({'file':entry['file'], 'originalBytes':len(readable),

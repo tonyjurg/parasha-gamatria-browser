@@ -4,6 +4,33 @@ import pytest
 from data_codec import compact_document, expand_document
 
 
+def test_expansion_is_idempotent_and_preserves_readable_identity(sample_document):
+    assert expand_document(sample_document) is sample_document
+    assert expand_document(expand_document(sample_document)) is sample_document
+    packed = compact_document(sample_document)
+    assert packed['schemaVersion'] == 2
+    readable = expand_document(packed)
+    assert readable['schemaVersion'] == 1
+    assert readable == sample_document
+    assert expand_document(readable) is readable
+    assert compact_document(readable) == packed
+
+
+def test_all_committed_documents_roundtrip_with_the_expected_schema_versions():
+    directory = Path(__file__).resolve().parents[1] / 'site/data'
+    paths = sorted(directory.glob('*.json'))
+    assert len(paths) == 54
+    for path in paths:
+        stored = json.loads(path.read_text(encoding='utf-8'))
+        assert stored['schemaVersion'] == 2
+        readable = expand_document(stored)
+        assert readable['schemaVersion'] == 1
+        assert expand_document(readable) is readable
+        compact = compact_document(readable)
+        assert compact == stored
+        assert expand_document(compact) == readable
+
+
 def test_null_empty_qere_discontinuous_membership_and_clipping_survive():
     methods = ['a', 'b', 'c', 'd', 'e']
     values = dict.fromkeys(['lexeme', 'word_ketiv', 'word_qere', 'full_ketiv', 'full_qere'], [None, 0, 1, 2, 3])
