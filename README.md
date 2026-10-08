@@ -125,6 +125,9 @@ The browser is published at [tonyjurg.github.io/parasha-gematria-browser](https:
 
 Deployment uses the existing 54 compact JSON files. It does not regenerate data, access the private source repositories, or require custom credentials. All links and data requests are relative, including under the GitHub project subdirectory. No build step or backend is required. The contents of `site/` can also be hosted on another static web server.
 
+## Responsible disclosure
+This project was created with assistance from OpenAI Codex. The human maintainer remains responsible for reviewing, testing, and accepting all code and documentation changes.
+
 ## Attribution and licenses
 
 - Tony Jurg, [gematria_TF](https://github.com/tonyjurg/gematria_TF), version 0.2.0: numerical values, text representations and full-word boundaries.
