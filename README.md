@@ -85,7 +85,7 @@ JavaScript tests the exact search logic used by the browser: known Genesis 1:1 t
 
 ## Code quality
 
-[`.github/workflows/quality.yml`](.github/workflows/quality.yml) runs on pushes and pull requests to `main`, and can also be run manually. It checks JavaScript with ESLint, checks Python and the notebook with Ruff, runs the browser tests, and runs the Python tests on Linux Python 3.11/3.13 and Windows Python 3.13. Python dependencies are installed from the hashed lock with `--require-hashes --only-binary=:all:`. The checks validate the committed compact datasets without regenerating them or accessing private source repositories. The workflow has read-only repository permissions and no deployment access.
+[`.github/workflows/quality.yml`](.github/workflows/quality.yml) runs on pull requests to `main`, can be run manually, and is called by Pages on pushes to `main`. This runs the full matrix once per push. It checks JavaScript with ESLint, checks Python and the notebook with Ruff, runs the browser tests, and runs the Python tests on Linux Python 3.11/3.13 and Windows Python 3.13. Python dependencies are installed from the hashed lock with `--require-hashes --only-binary=:all:`. The checks validate the committed compact datasets without regenerating them or accessing private source repositories. The workflow has read-only repository permissions and no deployment access.
 
 To run the lint checks locally, use Node.js 24 or later and install the Python development requirements:
 
@@ -96,7 +96,7 @@ python -m pip install --require-hashes --only-binary=:all: -r requirements-dev.t
 python -m ruff check .
 ```
 
-Lint rules focus on errors, unused code, and likely bugs; they do not impose a repository-wide formatting change. The workflow reports checks but does not itself enable branch protection or make them required for merging.
+Lint rules focus on errors, unused code, and likely bugs; they do not impose a repository-wide formatting change. The workflow also supports `workflow_call` so Pages runs the same checks as a prerequisite for deployment. Branch protection is not enabled by the workflow, but deployment is gated independently of merge protection.
 
 ## Security and dependency maintenance
 
@@ -117,7 +117,7 @@ uv pip compile --universal --python-version 3.11 --generate-hashes --no-build -c
 
 The browser is published at [tonyjurg.github.io/parasha-gematria-browser](https://tonyjurg.github.io/parasha-gematria-browser/), with the [browser guide](https://tonyjurg.github.io/parasha-gematria-browser/info.html) on the same site.
 
-[`.github/workflows/pages.yml`](.github/workflows/pages.yml) uses GitHub Actions to run the JavaScript tests, upload **only `site/`**, and deploy it to GitHub Pages. It runs automatically on pushes to `main`, or manually from **Actions > Deploy GitHub Pages > Run workflow**. In **Settings > Pages > Build and deployment**, the publishing source must be **GitHub Actions**. Official actions are pinned to commit hashes; deployment permissions are limited to the deployment job.
+[`.github/workflows/pages.yml`](.github/workflows/pages.yml) first calls **Code Quality** for the same commit. ESLint, Ruff, browser tests, and all Python test matrix jobs must succeed before it uploads **only `site/`** and deploys it to GitHub Pages. A failed, cancelled, or skipped quality job blocks the upload and deployment. This gate applies both to automatic pushes to `main` and manual runs from **Actions > Deploy GitHub Pages > Run workflow**; other branches cannot deploy. In **Settings > Pages > Build and deployment**, the publishing source must be **GitHub Actions**. Official actions are pinned to commit hashes; deployment permissions are limited to the deployment job.
 
 Deployment uses the existing 54 compact JSON files. It does not regenerate data, access the private source repositories, or require custom credentials. All links and data requests are relative, including under the GitHub project subdirectory. No build step or backend is required. The contents of `site/` can also be hosted on another static web server.
 
