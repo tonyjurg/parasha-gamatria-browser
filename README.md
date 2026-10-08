@@ -115,7 +115,7 @@ uv pip compile --universal --python-version 3.11 --generate-hashes --no-build -c
 
 ## GitHub Pages
 
-The browser is published at [tonyjurg.github.io/parasha-gamatria-browser](https://tonyjurg.github.io/parasha-gamatria-browser/), with the [browser guide](https://tonyjurg.github.io/parasha-gamatria-browser/info.html) on the same site.
+The browser is published at [tonyjurg.github.io/parasha-gematria-browser](https://tonyjurg.github.io/parasha-gematria-browser/), with the [browser guide](https://tonyjurg.github.io/parasha-gematria-browser/info.html) on the same site.
 
 [`.github/workflows/pages.yml`](.github/workflows/pages.yml) uses GitHub Actions to run the JavaScript tests, upload **only `site/`**, and deploy it to GitHub Pages. It runs automatically on pushes to `main`, or manually from **Actions > Deploy GitHub Pages > Run workflow**. In **Settings > Pages > Build and deployment**, the publishing source must be **GitHub Actions**. Official actions are pinned to commit hashes; deployment permissions are limited to the deployment job.
 
