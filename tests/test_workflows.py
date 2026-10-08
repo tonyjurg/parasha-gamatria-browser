@@ -11,11 +11,38 @@ def test_workflows_parse_and_use_pinned_actions(workflow):
     document = yaml.safe_load((ROOT / f'.github/workflows/{workflow}.yml').read_text(encoding='utf-8'))
     assert document['permissions'] == {'contents': 'read'}
     for job in document['jobs'].values():
-        for step in job['steps']:
+        if 'uses' in job:
+            assert job['uses'] == './.github/workflows/quality.yml'
+        for step in job.get('steps', []):
             if 'run' in step:
                 assert isinstance(step['run'], str)
             if 'uses' in step:
                 assert re.fullmatch(r'actions/[a-z-]+@[0-9a-f]{40}', step['uses'])
+
+
+def test_pages_requires_successful_quality_before_upload_and_deployment():
+    pages = yaml.safe_load((ROOT / '.github/workflows/pages.yml').read_text(encoding='utf-8'))
+    quality = yaml.safe_load((ROOT / '.github/workflows/quality.yml').read_text(encoding='utf-8'))
+    # PyYAML's YAML 1.1 loader interprets the unquoted "on" key as True.
+    assert 'workflow_call' in quality[True]
+    jobs = pages['jobs']
+    assert jobs['quality']['uses'] == './.github/workflows/quality.yml'
+    assert jobs['quality']['permissions'] == {'contents': 'read'}
+    assert jobs['quality']['if'] == "github.ref == 'refs/heads/main'"
+    assert jobs['build']['needs'] == 'quality'
+    assert jobs['build']['if'] == "github.ref == 'refs/heads/main'"
+    assert jobs['deploy']['needs'] == 'build'
+    assert 'if' not in jobs['deploy']
+    for job in [*jobs.values(), *quality['jobs'].values()]:
+        assert not job.get('continue-on-error', False)
+        for step in job.get('steps', []):
+            assert not step.get('continue-on-error', False)
+    commands = [step['run'] for step in quality['jobs']['javascript']['steps'] if 'run' in step]
+    assert 'npm run lint' in commands
+    assert 'npm test' in commands
+    commands = [step['run'] for step in quality['jobs']['python']['steps'] if 'run' in step]
+    assert 'python -m ruff check . --output-format=github' in commands
+    assert 'python -m pytest -q' in commands
 
 
 def test_dependabot_checks_actions_weekly():
