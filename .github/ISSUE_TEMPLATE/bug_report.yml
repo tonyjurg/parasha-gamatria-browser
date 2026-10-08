@@ -1,0 +1,38 @@
+name: Bug report
+description: Report a problem with the browser or repository tools.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve Parasha Gematria Browser. For incorrect Hebrew text or gematria values, use the Data correction form.
+        Report security vulnerabilities privately through [Security Advisories](https://github.com/tonyjurg/parasha-gematria-browser/security/advisories).
+  - type: textarea
+    id: behavior
+    attributes:
+      label: What happened?
+      description: Describe the problem and what you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Include the page URL and any search, filter, or display settings needed to reproduce the problem.
+      placeholder: |
+        1. Open ...
+        2. Select ...
+        3. Observe ...
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Browser and operating system; for repository tools, include Python or Node.js version and the command you ran.
+      placeholder: Firefox on Windows 11
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Screenshots or logs
+      description: Attach screenshots or paste relevant console output. Remove private information before posting.
