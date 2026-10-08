@@ -102,13 +102,15 @@ Lint rules focus on errors, unused code, and likely bugs; they do not impose a r
 
 See [SECURITY.md](SECURITY.md) for supported versions, confidential reporting, and security boundaries. Both HTML pages use a same-origin CSP. Rendering uses text nodes rather than HTML injection, numerical searches accept only decimal nonnegative safe integers, and external SHEBANQ links use `noopener noreferrer`. ESLint rejects common HTML injection and dynamic code-execution APIs. These controls are defense in depth, not a guarantee against all vulnerabilities; meta CSP does not support `frame-ancestors`.
 
-[`.github/dependabot.yml`](.github/dependabot.yml) checks the SHA-pinned GitHub Actions weekly and opens reviewable update PRs. It does not enable automatic merging.
+[`.github/dependabot.yml`](.github/dependabot.yml) checks SHA-pinned GitHub Actions, npm dependencies, and Python requirements with the native `uv` updater every Monday at 09:00 Europe/Amsterdam. Action updates are grouped; npm and Python minor/patch updates are grouped per ecosystem, with major updates proposed separately. npm and Python security fixes have their own groups. Each ecosystem is limited to five open version-update PRs. Dependabot alerts and security updates are enabled in the repository settings. Update PRs run the same Code Quality checks and are reviewed before merging.
+
+The native `uv` updater supports the existing `.in` inputs and compiled `.txt` locks. Their command headers retain universal resolution, Python 3.11, and hash generation. The development input includes `-c requirements.txt` so automated compilation retains the runtime constraints, and `[tool.uv] no-build = true` in `pyproject.toml` preserves wheel-only resolution. Review input and lock changes together, and use the commands below when regenerating locks manually.
 
 `requirements.in` and `requirements-dev.in` are the dependency inputs. Their corresponding `.txt` files are generated, fully pinned, hashed locks with environment markers for cross-platform installation. Runtime pins also constrain the development lock. To regenerate them, install `uv==0.12.23` in a separate tooling environment and run:
 
 ```console
 uv pip compile --universal --python-version 3.11 --generate-hashes --no-build requirements.in -o requirements.txt
-uv pip compile --universal --python-version 3.11 --generate-hashes --no-build -c requirements.txt requirements-dev.in -o requirements-dev.txt
+uv pip compile --universal --python-version 3.11 --generate-hashes --no-build requirements-dev.in -o requirements-dev.txt
 ```
 
 `uv` is needed only to maintain the locks, not to use the browser or install its Python tools. Unlike an environment-specific pip-tools compilation, universal resolution includes platform-dependent packages such as Linux `pexpect` and Windows `colorama`. Use `--upgrade-package NAME` for an intentional transitive update, then review both locks and run the checks. Dependency hashes verify downloaded distributions; they do not attest that a dependency is safe. Wheel-only installs avoid executing source-build hooks.
