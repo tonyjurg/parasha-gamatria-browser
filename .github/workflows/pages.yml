@@ -13,6 +13,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Main-only guards protect manual runs; deploy inherits the restriction through needs.
   quality:
     if: github.ref == 'refs/heads/main'
     uses: ./.github/workflows/quality.yml

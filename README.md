@@ -85,7 +85,7 @@ JavaScript tests the exact search logic used by the browser: known Genesis 1:1 t
 
 ## Code quality
 
-[`.github/workflows/quality.yml`](.github/workflows/quality.yml) runs on pushes and pull requests to `main`, and can also be run manually. It checks JavaScript with ESLint, checks Python and the notebook with Ruff, runs the browser tests, and runs the Python tests on Linux Python 3.11/3.13 and Windows Python 3.13. Python dependencies are installed from the hashed lock with `--require-hashes --only-binary=:all:`. The checks validate the committed compact datasets without regenerating them or accessing private source repositories. The workflow has read-only repository permissions and no deployment access.
+[`.github/workflows/quality.yml`](.github/workflows/quality.yml) runs on pull requests to `main`, can be run manually, and is called by Pages on pushes to `main`. This runs the full matrix once per push. It checks JavaScript with ESLint, checks Python and the notebook with Ruff, runs the browser tests, and runs the Python tests on Linux Python 3.11/3.13 and Windows Python 3.13. Python dependencies are installed from the hashed lock with `--require-hashes --only-binary=:all:`. The checks validate the committed compact datasets without regenerating them or accessing private source repositories. The workflow has read-only repository permissions and no deployment access.
 
 To run the lint checks locally, use Node.js 24 or later and install the Python development requirements:
 

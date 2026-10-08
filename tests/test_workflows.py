@@ -6,6 +6,11 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def needs_list(job):
+    needs = job['needs']
+    return [needs] if isinstance(needs, str) else needs
+
+
 @pytest.mark.parametrize('workflow', ['pages', 'quality'])
 def test_workflows_parse_and_use_pinned_actions(workflow):
     document = yaml.safe_load((ROOT / f'.github/workflows/{workflow}.yml').read_text(encoding='utf-8'))
@@ -23,16 +28,24 @@ def test_workflows_parse_and_use_pinned_actions(workflow):
 def test_pages_requires_successful_quality_before_upload_and_deployment():
     pages = yaml.safe_load((ROOT / '.github/workflows/pages.yml').read_text(encoding='utf-8'))
     quality = yaml.safe_load((ROOT / '.github/workflows/quality.yml').read_text(encoding='utf-8'))
-    # PyYAML's YAML 1.1 loader interprets the unquoted "on" key as True.
-    assert 'workflow_call' in quality[True]
+    # Accept both a quoted "on" and PyYAML's YAML 1.1 interpretation as True.
+    triggers = quality.get('on', quality.get(True))
+    assert set(triggers) == {'pull_request', 'workflow_dispatch', 'workflow_call'}
+    assert triggers['pull_request']['branches'] == ['main']
+    assert set(quality['jobs']) == {'javascript', 'python'}
+    for job in quality['jobs'].values():
+        assert 'if' not in job
     jobs = pages['jobs']
     assert jobs['quality']['uses'] == './.github/workflows/quality.yml'
     assert jobs['quality']['permissions'] == {'contents': 'read'}
     assert jobs['quality']['if'] == "github.ref == 'refs/heads/main'"
-    assert jobs['build']['needs'] == 'quality'
+    assert needs_list(jobs['build']) == ['quality']
     assert jobs['build']['if'] == "github.ref == 'refs/heads/main'"
-    assert jobs['deploy']['needs'] == 'build'
+    assert needs_list(jobs['deploy']) == ['build']
     assert 'if' not in jobs['deploy']
+    for job in jobs.values():
+        assert 'always()' not in str(job.get('if', ''))
+        assert '!cancelled()' not in str(job.get('if', ''))
     for job in [*jobs.values(), *quality['jobs'].values()]:
         assert not job.get('continue-on-error', False)
         for step in job.get('steps', []):
