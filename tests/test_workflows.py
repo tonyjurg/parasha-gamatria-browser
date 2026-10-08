@@ -1,5 +1,6 @@
 from pathlib import Path
 import re
+import tomllib
 import pytest
 import yaml
 
@@ -58,12 +59,29 @@ def test_pages_requires_successful_quality_before_upload_and_deployment():
     assert 'python -m pytest -q' in commands
 
 
-def test_dependabot_checks_actions_weekly():
+@pytest.mark.parametrize('ecosystem', ['github-actions', 'npm', 'uv'])
+def test_dependabot_checks_dependencies_weekly(ecosystem):
     document = yaml.safe_load((ROOT / '.github/dependabot.yml').read_text(encoding='utf-8'))
     assert document['version'] == 2
-    actions = next(update for update in document['updates'] if update['package-ecosystem'] == 'github-actions')
-    assert actions['directory'] == '/'
-    assert actions['schedule']['interval'] == 'weekly'
+    update = next(update for update in document['updates'] if update['package-ecosystem'] == ecosystem)
+    assert update['directory'] == '/'
+    assert update['schedule'] == {
+        'interval': 'weekly', 'day': 'monday', 'time': '09:00', 'timezone': 'Europe/Amsterdam',
+    }
+    assert update['open-pull-requests-limit'] == 5
+
+
+def test_dependabot_uv_compile_retains_runtime_constraint_and_no_build_policy():
+    config = tomllib.loads((ROOT / 'pyproject.toml').read_text(encoding='utf-8'))
+    assert config['tool']['uv']['no-build'] is True
+    assert '-c requirements.txt' in (ROOT / 'requirements-dev.in').read_text(encoding='utf-8').splitlines()
+    for filename in ['requirements.txt', 'requirements-dev.txt']:
+        lock = (ROOT / filename).read_text(encoding='utf-8')
+        header = lock.splitlines()[1]
+        assert 'uv pip compile' in header
+        assert '--universal' in header
+        assert '--python-version 3.11' in header
+        assert '--generate-hashes' in header
 
 
 def test_quality_workflow_runs_the_full_source_independent_python_suite():
