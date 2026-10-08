@@ -1,4 +1,4 @@
-# Parasha Gamatria Browser
+# Parasha Gematria Browser
 
 A static, interactive reader for exploring gematria in the 54 individual Torah portions. Choose a parasha, numerical method, text representation and reading. Click a Hebrew word to find every matching verse, sentence, clause or phrase **within that parasha**. Or find passages containing at least two words with the same value.
 
