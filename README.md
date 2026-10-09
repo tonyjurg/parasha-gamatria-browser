@@ -1,6 +1,7 @@
 # Parasha Gematria Browser
 
-[![Checks on main](https://img.shields.io/github/actions/workflow/status/tonyjurg/parasha-gematria-browser/pages.yml?branch=main&label=checks&logo=github)](https://github.com/tonyjurg/parasha-gematria-browser/actions/workflows/pages.yml?query=branch%3Amain)
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)  [![Checks on main](https://img.shields.io/github/actions/workflow/status/tonyjurg/parasha-gematria-browser/pages.yml?branch=main&label=checks&logo=github)](https://github.com/tonyjurg/parasha-gematria-browser/actions/workflows/pages.yml?query=branch%3Amain) [![Ask DeepWiki](https://img.shields.io/badge/Ask-DeepWiki-blue)](https://deepwiki.com/tonyjurg/parasha-gematria-browser)
+
 
 A static, interactive reader for exploring gematria in the 54 individual Torah portions. Choose a parasha, numerical method, text representation and reading. Click a Hebrew word to find every matching verse, sentence, clause or phrase **within that parasha**. Or find passages containing at least two words with the same value.
 
