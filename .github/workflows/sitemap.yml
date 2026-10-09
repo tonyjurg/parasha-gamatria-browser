@@ -1,0 +1,50 @@
+name: Generate sitemap
+
+on:
+  push:
+    paths:
+      - 'site/**'
+      - 'scripts/generate_sitemap.py'
+      - 'tests/test_sitemap.py'
+      - '.github/workflows/sitemap.yml'
+  pull_request:
+    paths:
+      - 'site/**'
+      - 'scripts/generate_sitemap.py'
+      - 'tests/test_sitemap.py'
+      - '.github/workflows/sitemap.yml'
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: 'Public site URL (overrides the SITE_URL repository variable)'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  sitemap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.13'
+      - name: Test generator offline
+        run: python -m unittest discover -s tests -p test_sitemap.py -v
+      - name: Generate sitemap
+        env:
+          SITE_URL: ${{ inputs.base_url || vars.SITE_URL }}
+        run: |
+          if [ -z "$SITE_URL" ]; then
+            SITE_URL="https://tonyjurg.github.io/parasha-gematria-browser/"
+          fi
+          python scripts/generate_sitemap.py --base-url "$SITE_URL"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: sitemap
+          path: site/sitemap.xml
+          if-no-files-found: error

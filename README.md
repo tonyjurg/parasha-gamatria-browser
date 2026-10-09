@@ -127,6 +127,25 @@ The browser is published at [tonyjurg.github.io/parasha-gematria-browser](https:
 
 Deployment uses the existing 54 compact JSON files. It does not regenerate data, access the private source repositories, or require custom credentials. All links and data requests are relative, including under the GitHub project subdirectory. No build step or backend is required. The contents of `site/` can also be hosted on another static web server.
 
+## Generate the sitemap
+
+The **Generate sitemap** workflow runs on site changes and can also be started
+manually. It discovers HTML pages under `site/`, including the browser and
+`info.html` guide, and uploads `sitemap.xml` as a downloadable artifact.
+Portion selection fragments and JSON assets are excluded.
+
+The default URL is `https://tonyjurg.github.io/parasha-gematria-browser/`.
+Set the Actions repository variable `SITE_URL` or the manual `base_url` input
+to override it. Generation uses Python's standard library with no network access:
+
+```console
+python scripts/generate_sitemap.py --base-url https://tonyjurg.github.io/parasha-gematria-browser/
+python -m unittest discover -s tests -p test_sitemap.py -v
+```
+
+The sitemap workflow creates an artifact without deploying it. Include the
+generated `site/sitemap.xml` in a site deployment to publish it.
+
 ## Responsible disclosure
 This project was created with assistance from OpenAI Codex. The human maintainer remains responsible for reviewing, testing, and accepting all code and documentation changes.
 
