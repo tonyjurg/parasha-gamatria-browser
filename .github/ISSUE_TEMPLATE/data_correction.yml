@@ -1,0 +1,41 @@
+name: Data correction
+description: Report incorrect Hebrew text, verse metadata, or gematria values.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Please include enough detail to locate the entry and reproduce its value. You do not need access to the source datasets to report a correction.
+  - type: input
+    id: location
+    attributes:
+      label: Affected passage
+      description: Include the parasha, book, chapter, verse, and affected word where possible.
+      placeholder: Bereshit, Genesis 1:1, בראשית
+    validations:
+      required: true
+  - type: textarea
+    id: settings
+    attributes:
+      label: Calculation and display settings
+      description: Include the gematria method, representation (whole word, word part, or dictionary form), and ketiv/qere selection. For metadata corrections, enter not applicable.
+    validations:
+      required: true
+  - type: textarea
+    id: correction
+    attributes:
+      label: Observed and expected data
+      description: State the current text or value and the correction you expect. Include your calculation when reporting a numeric value.
+    validations:
+      required: true
+  - type: textarea
+    id: source
+    attributes:
+      label: Supporting evidence
+      description: Provide a source citation, link, screenshot, or explanation supporting the correction.
+    validations:
+      required: true
+  - type: textarea
+    id: identifiers
+    attributes:
+      label: Additional identifiers
+      description: Optional page URL, dataset filename, word IDs, or repository commit.
