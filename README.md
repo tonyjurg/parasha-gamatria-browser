@@ -99,7 +99,7 @@ python -m pip install --require-hashes --only-binary=:all: -r requirements-dev.t
 python -m ruff check .
 ```
 
-Lint rules focus on errors, unused code, and likely bugs; they do not impose a repository-wide formatting change. The workflow also supports `workflow_call` so Pages runs the same checks as a prerequisite for deployment. Branch protection is not enabled by the workflow, but deployment is gated independently of merge protection.
+Lint rules focus on errors, unused code, and likely bugs; they do not impose a repository-wide formatting change. The workflow also supports `workflow_call` so Pages runs the same checks as a prerequisite for deployment. Branch protection is not enabled by the workflow, but deployment is gated independently of merge protection. The [versioned main ruleset and activation guide](docs/branch-protection.md) provide merge protection once a repository administrator imports and activates the policy in GitHub settings.
 
 ## Security and dependency maintenance
 
