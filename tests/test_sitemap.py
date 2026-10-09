@@ -12,13 +12,16 @@ class SitemapTests(unittest.TestCase):
                      "https://example.com/a&b"):
             with self.subTest(base=base), tempfile.TemporaryDirectory(dir=Path.cwd()) as folder:
                 output = Path(folder) / "nested/sitemap.xml"
-                generate(base, output)
+                site = Path(folder) / "site"
+                site.mkdir()
+                (site / "index.html").write_text("<!doctype html>", encoding="utf-8")
+                generate(base, output, site)
                 root = ET.parse(output).getroot()
                 self.assertEqual(root.tag, f"{{{NAMESPACE}}}urlset")
                 locations = root.findall(f"{{{NAMESPACE}}}url/{{{NAMESPACE}}}loc")
                 self.assertEqual([loc.text for loc in locations], [base.rstrip("/") + "/"])
                 first = output.read_bytes()
-                generate(base, output)
+                generate(base, output, site)
                 self.assertEqual(first, output.read_bytes())
 
     def test_invalid_urls_do_not_write_output(self):
