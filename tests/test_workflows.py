@@ -59,6 +59,20 @@ def test_pages_requires_successful_quality_before_upload_and_deployment():
     assert 'python -m pytest -q' in commands
 
 
+def test_pages_generates_sitemap_before_upload_with_configured_public_url():
+    pages = yaml.safe_load((ROOT / '.github/workflows/pages.yml').read_text(encoding='utf-8'))
+    steps = pages['jobs']['build']['steps']
+    configure = next(i for i, step in enumerate(steps) if step.get('id') == 'pages')
+    generate = next(i for i, step in enumerate(steps)
+                    if 'scripts/generate_sitemap.py' in step.get('run', ''))
+    upload = next(i for i, step in enumerate(steps)
+                  if step.get('uses', '').startswith('actions/upload-pages-artifact@'))
+    assert configure < generate < upload
+    assert steps[generate]['env']['SITE_URL'] == '${{ steps.pages.outputs.base_url }}'
+    assert steps[generate]['run'] == 'python scripts/generate_sitemap.py --base-url "$SITE_URL"'
+    assert steps[upload]['with']['path'] == 'site'
+
+
 @pytest.mark.parametrize('ecosystem', ['github-actions', 'npm', 'uv'])
 def test_dependabot_checks_dependencies_weekly(ecosystem):
     document = yaml.safe_load((ROOT / '.github/dependabot.yml').read_text(encoding='utf-8'))

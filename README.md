@@ -143,8 +143,11 @@ python scripts/generate_sitemap.py --base-url https://tonyjurg.github.io/parasha
 python -m unittest discover -s tests -p test_sitemap.py -v
 ```
 
-The sitemap workflow creates an artifact without deploying it. Include the
-generated `site/sitemap.xml` in a site deployment to publish it.
+The Pages deployment generates `site/sitemap.xml` using the configured Pages
+URL before uploading the site. Once deployment succeeds, submit
+[sitemap.xml](https://tonyjurg.github.io/parasha-gematria-browser/sitemap.xml)
+to Google Search Console. The separate sitemap workflow also provides a
+downloadable artifact.
 
 ## Responsible disclosure
 This project was created with assistance from OpenAI Codex. The human maintainer remains responsible for reviewing, testing, and accepting all code and documentation changes.

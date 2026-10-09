@@ -34,7 +34,16 @@ jobs:
         with:
           persist-credentials: false
       - name: Configure Pages
+        id: pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+      - name: Set up Python for sitemap generation
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.13'
+      - name: Generate sitemap for the deployed site
+        env:
+          SITE_URL: ${{ steps.pages.outputs.base_url }}
+        run: python scripts/generate_sitemap.py --base-url "$SITE_URL"
       - name: Upload static website only
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
